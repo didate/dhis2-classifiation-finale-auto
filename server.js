@@ -3,8 +3,6 @@ const { constants } = require('./constants/DE');
 const { EVENTS } = require('./data.js');
 const fs = require('fs');
 
-// traitement des PCR
-
 const run = async () => {
 
     for (let index = 0; index < EVENTS.length; index++) {
@@ -15,9 +13,11 @@ const run = async () => {
             // Check if not already classed
 
             const contentClassification = event.data.dataValues.filter(e => e.dataElement === constants.CLASSIFICATION_DE);
+
             if (contentClassification && contentClassification.length === 0) { // NON CLASSE
+
                 let resultTest = event.data.dataValues.filter(e => e.dataElement === constants.PCR_RESULTAT_DE); // PCR
-                let resultTraitement = [];
+                let resultTraitement = {};
                 if (resultTest && resultTest.length > 0) {
                     resultTraitement = traitement(resultTest[0]);
                 } else {
@@ -39,7 +39,7 @@ const run = async () => {
                 fs.writeFile(`./logs/logs_${date.getFullYear()}${date.getMonth()}${date.getDate()}.log`, `${EVENTS[index]} ALREADY CLASSED\n`, { flag: 'a+' }, err => { })
             }
         } catch (error) {
-            fs.writeFile('./logs/test.txt', `${EVENTS[index]} NOT OK\n`, { flag: 'a+' }, err => { })
+            fs.writeFile(`./logs/logs_${date.getFullYear()}${date.getMonth()}${date.getDate()}.log` `${EVENTS[index]} NOT OK\n`, { flag: 'a+' }, err => { })
             console.log(error)
         }
 
@@ -70,6 +70,7 @@ const traitement = (result) => {
             providedElsewhere: false,
             storedBy: 'didate'
         }
+
     }
     return null;
 }
